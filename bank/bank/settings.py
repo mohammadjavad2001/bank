@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'site1',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -79,7 +80,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'bank',
         'USER': 'postgres',
-        'PASSWORD': '4000hello',
+        'PASSWORD': '10003000',
         'HOST':'localhost',
         'PORT': '',
     }

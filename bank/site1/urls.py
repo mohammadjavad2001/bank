@@ -1,7 +1,8 @@
-from django.urls import path
-
+from django.contrib import admin  
+from django.urls import path  
+from site1 import views  
 from . import views
 
 urlpatterns = [
-    path('', views.index, name='index'),
+        path('signup/',views.signupform),
 ]
