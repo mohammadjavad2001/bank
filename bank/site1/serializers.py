@@ -12,4 +12,6 @@ class CustomerSerializer(serializers.ModelSerializer):
 class AccountSerializer(serializers.ModelSerializer):
    class Meta:
        model = Account
-       fields = ('Customerid', 'balance', 'createddate','deleteddate','account_id')
+       fields = ('account_id', 'balance', 'createddate','deleteddate')
+
+
