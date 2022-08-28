@@ -1,9 +1,13 @@
 from django.shortcuts import render
 from site1.forms import signupform
 from django.http import HttpResponse
-def signupform(request):  
-    signing = signupform(request.POST)  
-    return render(request,"signup.html",{'form':signing})  
+from django.http import response
+      
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+@api_view(['GET'])
+def home(request):  
+    return Response('HEllllllllllo')
 def signup(request):
    username = "not logged in"
    
