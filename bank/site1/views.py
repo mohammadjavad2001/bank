@@ -92,5 +92,17 @@ def signup(request):
 
 class CustomerList(APIView):
    def get(self,request):
-      customers=Customer.objects.all()
-      serializer=CustomerSerializer(customers,many=True)
+      customers=Customer.objects.filter(age=37)
+      serialized=CustomerSerializer(customers,many=True)
+      return Response(serialized.data)
+
+class Customerfinder(APIView):
+   def get(self,request,usenamesearch):
+      try:
+         Customer_found=Customer.objects.get(username=usenamesearch)
+      except Customer.DoesNotExists:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+      serialized=CustomerSerializer(Customer_found)            
+      return Response(serialized.data)  
+
