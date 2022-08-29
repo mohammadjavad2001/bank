@@ -8,5 +8,5 @@ urlpatterns = [
         path('home/',views.home),
         path('age/<int:age>/',views.ageget),
         path('wf/',views.wf),
-
+        path('postdata/',views.postdata),
 ]
