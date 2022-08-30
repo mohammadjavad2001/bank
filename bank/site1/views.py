@@ -1,11 +1,11 @@
-from ast import Try
-from gzip import READ
+from ast import Delete
 from telnetlib import STATUS
 from django.shortcuts import render
 from site1.forms import signupform
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.http import HttpResponse
+from django.http import Http404
 from django.core import serializers
 from django.http import response
 from .models import *
@@ -14,6 +14,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+
 def wf(request):
    mydata = Customer.objects.filter(Customer_id='18').values()
    print(mydata)
@@ -24,7 +25,7 @@ def wf(request):
 def postdata(request):
    city1 = request.data.get('city')
    cities=Customer.objects.filter(city=city1)
-   Customer_serial=CustomerSerializer(cities[0])
+   Customer_serial=CustomerSerializer(cities,many=True)
    return Response(Customer_serial.data,status=status.HTTP_200_OK)
 
 
@@ -95,14 +96,47 @@ class CustomerList(APIView):
       customers=Customer.objects.filter(age=37)
       serialized=CustomerSerializer(customers,many=True)
       return Response(serialized.data)
+   def post(self,request):
+      serialized_data=CustomerSerializer(data=request.data)
+      if serialized_data.is_valid():
+         serialized_data.save()
+         return Response(serialized_data.data,status=status.HTTP_202_ACCEPTED)
+      return Response(serialized_data.data,status=status.HTTP_400_BAD_REQUEST)     
+
 
 class Customerfinder(APIView):
-   def get(self,request,usenamesearch):
+   def get_object(self,username1):
       try:
-         Customer_found=Customer.objects.get(username=usenamesearch)
-      except Customer.DoesNotExists:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
+         customer=Customer.objects.get(username=username1)
+      except Customer.DoesNotExist:
+         raise Http404   
+      return customer
+   #get in url /site1/custonerfinder/amir/
+   def get(self,request,usenamesearch):
+      Customer_found=self.get_object(usenamesearch)
       serialized=CustomerSerializer(Customer_found)            
       return Response(serialized.data)  
+
+   def put(self,request,usenamesearch):
+      try:
+         customeredit=Customer.objects.get(username=usenamesearch)
+      except Customer.DoesNotExist:
+         return Response(status=status.HTTP_404_NOT_FOUND)
+      serializer22=CustomerSerializer(customeredit,data=request.data,partial=True)
+      #argument partial must be true then we can change only one field 
+      if serializer22.is_valid():
+         serializer22.save()
+         return Response(serializer22.data)
+      return Response(serializer22.data,status=status.HTTP_403_FORBIDDEN)         
+
+   def delete(self,request,usenamesearch):
+      try:
+         customeredit=Customer.objects.get(username=usenamesearch)
+      except Customer.DoesNotExist:
+         return Response(status=status.HTTP_404_NOT_FOUND)
+      serializer22=CustomerSerializer(customeredit)
+
+      serializer22.Delete()
+      return Response(status=status.HTTP_204_NO_CONTENT)
+
 
