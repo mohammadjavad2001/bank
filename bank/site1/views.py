@@ -136,7 +136,5 @@ class Customerfinder(APIView):
          return Response(status=status.HTTP_404_NOT_FOUND)
       serializer22=CustomerSerializer(customeredit)
 
-      serializer22.Delete()
-      return Response(status=status.HTTP_204_NO_CONTENT)
 
 
