@@ -10,11 +10,11 @@ class Customer(models.Model):
         class Meta:
             db_table = "Customer"
         def __str__(self):
-            return self.Customer_id
+            return self.username
                     
 class Account(models.Model):
         account_id = models.IntegerField(primary_key=True)
-        Customerid = models.OneToOneField(Customer,on_delete=models.CASCADE)
+        Customerid = models.OneToOneField(Customer,on_delete=models.CASCADE,related_name="accounts")
         balance = models.BigIntegerField()
         createddate = models.DateField()
         deleteddate = models.DateField()
@@ -22,12 +22,12 @@ class Account(models.Model):
             db_table = "Acoount"
     
         def __str__(self):
-            return self.account_id
+            return str(self.account_id)
                     
 class Transaction(models.Model):
         Transaction_id = models.IntegerField(primary_key=True)
         Transaction_type = models.CharField(max_length=50)
-        Origin_id= models.ForeignKey(Customer, on_delete=models.CASCADE)
+        Origin_id= models.ForeignKey(Customer, on_delete=models.CASCADE,related_name="originid")
         Destination_id = models.IntegerField()       
         date = models.DateField()
         amount = models.IntegerField()

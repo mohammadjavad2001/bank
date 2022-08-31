@@ -1,15 +1,22 @@
 from ast import Delete
+from calendar import c
 from telnetlib import STATUS
+
 from django.shortcuts import render
-from site1.forms import signupform
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.http import Http404
 from django.core import serializers
 from django.http import response
+
 from .models import *
-from .serializers import CustomerSerializer     
+from site1.forms import signupform
+from .serializers import AccountSerializer, CustomerSerializer     
+
+
+from rest_framework import generics
+from rest_framework import mixins
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -25,7 +32,9 @@ def wf(request):
 def postdata(request):
    city1 = request.data.get('city')
    cities=Customer.objects.filter(city=city1)
+
    Customer_serial=CustomerSerializer(cities,many=True)
+   bar = Account.objects.create()
    return Response(Customer_serial.data,status=status.HTTP_200_OK)
 
 
@@ -97,9 +106,14 @@ class CustomerList(APIView):
       serialized=CustomerSerializer(customers,many=True)
       return Response(serialized.data)
    def post(self,request):
+      #create new user 
       serialized_data=CustomerSerializer(data=request.data)
+      
       if serialized_data.is_valid():
-         serialized_data.save()
+
+         obj = serialized_data.save()
+         bar = Account.objects.create(balance=0,createddate=1/5/2020,deleteddate=1/5/2022,account_id=Account.objects.all().count()+1,Customerid=obj)
+
          return Response(serialized_data.data,status=status.HTTP_202_ACCEPTED)
       return Response(serialized_data.data,status=status.HTTP_400_BAD_REQUEST)     
 
@@ -113,7 +127,7 @@ class Customerfinder(APIView):
       return customer
    #get in url /site1/custonerfinder/amir/
    def get(self,request,usenamesearch):
-      Customer_found=self.get_object(usenamesearch)
+      Customer_found=Customer.objects.get(username=usenamesearch)
       serialized=CustomerSerializer(Customer_found)            
       return Response(serialized.data)  
 
@@ -134,7 +148,50 @@ class Customerfinder(APIView):
          customeredit=Customer.objects.get(username=usenamesearch)
       except Customer.DoesNotExist:
          return Response(status=status.HTTP_404_NOT_FOUND)
-      serializer22=CustomerSerializer(customeredit)
+
+      customeredit.delete()
+      return Response(status=status.HTTP_404_NOT_FOUND)
+#api with Customerlistview
+class CustomerListView(generics.GenericAPIView,
+                        mixins.CreateModelMixin,
+                        mixins.ListModelMixin):
+
+   queryset = Customer.objects.all()
+   serializer_class = CustomerSerializer
+   def get(self,request,*args, **kwargs):
+      return self.list(request,*args,**kwargs)
 
 
 
+   def post(self,request,*args, **kwargs):
+      return self.create(request,*args,**kwargs)      
+
+class CustomerListdetails(generics.GenericAPIView,
+                        mixins.RetrieveModelMixin,
+                        mixins.DestroyModelMixin,
+                        mixins.UpdateModelMixin):
+                        #we must pass the pk in urls for this api
+                        
+   queryset = Customer.objects.all()
+   serializer_class = CustomerSerializer         
+
+   def get(self,request,*args,**kwargs):
+      return self.retrieve(request,*args,**kwargs)
+
+   def put(self,request,*args,**kwargs):
+      return self.update(request,*args,**kwargs,partial=True)
+
+   def delete(self,request,*args,**kwargs):
+      return self.destroy(request,*args,**kwargs)   
+
+      
+            
+#api by generic 
+class CustomerGenericList(generics.ListCreateAPIView):
+   queryset= Customer.objects.all()
+   serializer_class = CustomerSerializer
+
+
+class CustomerGenericfinder(generics.RetrieveUpdateDestroyAPIView):
+   queryset= Customer.objects.all()
+   serializer_class = CustomerSerializer
