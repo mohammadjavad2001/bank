@@ -15,6 +15,12 @@ urlpatterns = [
         path('CustomerListdetails/<int:pk>/',views.CustomerListdetails.as_view()),
         path('CustomerGenericfinder/<int:pk>/',views.CustomerGenericfinder.as_view()),
         path('CustomerGenericList/',views.CustomerGenericList.as_view()),
+        path('avg_age_tehran/',views.avg_age_tehran),
+        path('posttransaction/',views.posttransaction),
+        path('gettransaction/',views.gettransaction),
+        path('getrelated/',views.getrelated),
+
+        
 
 
         #we can set url for any of api in class Customerfinder so we specified them        

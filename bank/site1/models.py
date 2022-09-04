@@ -10,7 +10,7 @@ class Customer(models.Model):
         class Meta:
             db_table = "Customer"
         def __str__(self):
-            return self.username
+            return str(self.username)
                     
 class Account(models.Model):
         account_id = models.IntegerField(primary_key=True)
@@ -35,6 +35,6 @@ class Transaction(models.Model):
         class Meta:
             db_table = "Transaction"
         def __str__(self):
-            return self.Transaction_id
+            return str(self.Transaction_id)
             
             
